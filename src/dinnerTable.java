@@ -127,6 +127,8 @@ public class dinnerTable {
         int i = generator.nextInt(2);
         int j = generator.nextInt(dinnerTable[i].length);
         long count = 0;
+        double temperature = 0.0000001;
+        double coolingRate = 0.0000003;
 
         long start = System.currentTimeMillis();
         long end = start+60000;
@@ -143,9 +145,11 @@ public class dinnerTable {
             dinnerTable[x][y] = temp;
             int currentScore = scoreTable();
 
-            if(currentScore>tableScore){
+
+            if(acceptanceProbability(currentScore,tableScore,temperature)>Math.random()){
                 tableScore = currentScore;
                 flips++;
+                temperature += coolingRate;
             }else{
                 int reverseTemp =dinnerTable[x][y];
                 dinnerTable[x][y] = dinnerTable[i][j];
@@ -158,6 +162,14 @@ public class dinnerTable {
         }
 
         return count;
+    }
+
+    double acceptanceProbability(int newScore, int oldScore, double temperature){
+        if (newScore>oldScore){
+            return 1.00;
+        }
+        int loss = oldScore-newScore;
+        return 1-(loss*temperature);
     }
 
     int scoreTable(){
