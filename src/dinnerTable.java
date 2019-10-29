@@ -123,7 +123,6 @@ public class dinnerTable {
 
     public long optimize(){
 
-        /*For inst 3 -> use 0.00000001 and 0.000000065 (6 or 65 or 7)  */
         Random generator = new Random();
         long count = 0;
         double temperature = 0.00000001;
@@ -174,7 +173,6 @@ public class dinnerTable {
         return count;
     }
 
-    /**!I GET A SHIT TONE OF THE SAME SCORE ! WHY ?! */
     double acceptanceProbability(int newScore, int oldScore, double temperature){
         if (newScore == oldScore){
             return 2.00;
