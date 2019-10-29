@@ -102,8 +102,7 @@ public class dinnerTable {
     public void seatGuests(){
         Random randomGenerator = new Random();
         Pair currentSeat;
-        int x = 0;
-        int y = 0;
+        int x,y = 0;
 
         /*Fill the table */
         while(toBeSeated.size()>0){
@@ -127,6 +126,7 @@ public class dinnerTable {
         long count = 0;
         double temperature = 0.00000001;
         double coolingRate = 0.00000007;
+        int i ,j, x,y,temp,currentScore =0;
 
 
         long start = System.currentTimeMillis();
@@ -137,17 +137,17 @@ public class dinnerTable {
         while(currentTime < end){
 
             /*Get First Tuple */
-            int i = generator.nextInt(2);
-            int j = generator.nextInt(dinnerTable[i].length);
+            i = generator.nextInt(2);
+            j = generator.nextInt(dinnerTable[i].length);
 
             /*Get Second Tuple */
-            int x = generator.nextInt(2);
-            int y = generator.nextInt(dinnerTable[x].length);
+            x = generator.nextInt(2);
+            y = generator.nextInt(dinnerTable[x].length);
 
-            int temp = dinnerTable[i][j];
+            temp = dinnerTable[i][j];
             dinnerTable[i][j] = dinnerTable[x][y];
             dinnerTable[x][y] = temp;
-            int currentScore = scoreTable();
+            currentScore = scoreTable();
 
             double probability = acceptanceProbability(currentScore,tableScore,temperature);
             if(probability>Math.random()){
@@ -186,13 +186,14 @@ public class dinnerTable {
 
     int scoreTable(){
 
-        int currentScore = 0;
+        int currentScore= 0;
+        int x = 0;
 
         for (int i = 0; i < 2; i++){
             for (int j = 0; j< dinnerTable[i].length; j++){
 
                 /* Get opposite preference value for EACH guest */
-                int x = Math.abs(i-1);
+                x = Math.abs(i-1);
                 currentScore+=preferenceValue(dinnerTable[i][j],dinnerTable[x][j]);
 
                 /* Get opposite couples host-guest status ONLY ONCE */
