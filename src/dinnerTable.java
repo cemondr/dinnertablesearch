@@ -123,12 +123,12 @@ public class dinnerTable {
 
     public long optimize(){
 
+        /*For inst 3 -> use 0.00000001 and 0.000000065 (6 or 65 or 7)  */
         Random generator = new Random();
-        int i = generator.nextInt(2);
-        int j = generator.nextInt(dinnerTable[i].length);
         long count = 0;
-        double temperature = 0.0000001;
-        double coolingRate = 0.0000003;
+        double temperature = 0.00000001;
+        double coolingRate = 0.00000007;
+
 
         long start = System.currentTimeMillis();
         long end = start+60000;
@@ -137,6 +137,11 @@ public class dinnerTable {
 
         while(currentTime < end){
 
+            /*Get First Tuple */
+            int i = generator.nextInt(2);
+            int j = generator.nextInt(dinnerTable[i].length);
+
+            /*Get Second Tuple */
             int x = generator.nextInt(2);
             int y = generator.nextInt(dinnerTable[x].length);
 
@@ -145,15 +150,19 @@ public class dinnerTable {
             dinnerTable[x][y] = temp;
             int currentScore = scoreTable();
 
-
-            if(acceptanceProbability(currentScore,tableScore,temperature)>Math.random()){
+            double probability = acceptanceProbability(currentScore,tableScore,temperature);
+            if(probability>Math.random()){
                 tableScore = currentScore;
-                flips++;
+                if(probability < 2){
+                    flips++;
+                }
                 temperature += coolingRate;
+
             }else{
                 int reverseTemp =dinnerTable[x][y];
                 dinnerTable[x][y] = dinnerTable[i][j];
                 dinnerTable[i][j] = reverseTemp;
+
             }
 
             currentTime = System.currentTimeMillis();
@@ -161,10 +170,15 @@ public class dinnerTable {
             count++;
         }
 
+
         return count;
     }
 
+    /**!I GET A SHIT TONE OF THE SAME SCORE ! WHY ?! */
     double acceptanceProbability(int newScore, int oldScore, double temperature){
+        if (newScore == oldScore){
+            return 2.00;
+        }
         if (newScore>oldScore){
             return 1.00;
         }
@@ -179,25 +193,25 @@ public class dinnerTable {
         for (int i = 0; i < 2; i++){
             for (int j = 0; j< dinnerTable[i].length; j++){
 
+                /* Get opposite preference value for EACH guest */
                 int x = Math.abs(i-1);
-
-                if (isOpposite(dinnerTable[i][j], dinnerTable[x][j])){
-                    currentScore +=1;
-                }
-
                 currentScore+=preferenceValue(dinnerTable[i][j],dinnerTable[x][j]);
 
-                if (j!=0){
-                    currentScore+=preferenceValue(dinnerTable[i][j],dinnerTable[i][j-1]);
-
-                    if (isOpposite(dinnerTable[i][j], dinnerTable[i][j-1])){
-                        currentScore +=1;
+                /* Get opposite couples host-guest status ONLY ONCE */
+                if (i!=1 ){
+                    if(isOpposite(dinnerTable[i][j], dinnerTable[x][j])){
+                        currentScore += 1;
                     }
                 }
+                /*Get left-side preference value for EACH guest that has a left partner  */
+                if (j!=0){
+                    currentScore+=preferenceValue(dinnerTable[i][j],dinnerTable[i][j-1]);
+                }
 
+                /*Get right side preference value for EACH guest that has a right partner AND get host-guest relationship
+                * for all adjacent couples */
                 if (j!=dinnerTable[i].length-1){
                     currentScore+=preferenceValue(dinnerTable[i][j],dinnerTable[i][j+1]);
-
                     if (isOpposite(dinnerTable[i][j], dinnerTable[i][j+1])){
                         currentScore +=1;
                     }
@@ -236,13 +250,13 @@ public class dinnerTable {
 
     public static void main(String [] args){
         dinnerTable table = new dinnerTable(args[0]);
+        System.out.println("Running for 60 seconds...");
         table.seatGuests();
-        long tried = table.optimize();
+        table.optimize();
         table.displayDinnerTable();
         System.out.println();
         System.out.println("Score: "+table.getTableScore());
         System.out.println("Flipped: " + table.getFlips());
-        System.out.println("Tried: "+tried+" times");
     }
 
 
